@@ -1,5 +1,5 @@
 # selenium-server-video
-selenium server contains a servlet with ffmpeg video-recording. It is exclusively for **linux** systems, to run inside **docker**
+selenium server with servlet for ffmpeg video-recording. It is exclusively for **linux** systems, to run inside **docker**
 
 selenium server 3.5.2
 ffpmeg params: recorder x11grab, 12fps, screensize according to wizdow size, display according to env variable "DISPLAY"
