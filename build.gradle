@@ -1,0 +1,34 @@
+group 'com.portaone.videonode'
+version '1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'log4j:log4j:1.2.17'
+    compile 'org.zeroturnaround:zt-exec:1.9'
+    compile 'org.seleniumhq.selenium:selenium-server:3.5.2'
+    testCompile 'junit:junit:4.12'
+    testCompile 'com.codeborne:selenide:4.5.1'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.openqa.grid.selenium.GridLauncherV3'
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0.1'
+}
