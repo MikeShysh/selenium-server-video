@@ -1,6 +1,8 @@
 package com.portaone.videonode.utils;
 
+import com.portaone.videonode.exception.RecordingException;
 import org.apache.commons.lang3.SystemUtils;
+import org.awaitility.core.ConditionTimeoutException;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.awt.*;
@@ -9,10 +11,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 import static org.apache.commons.io.FilenameUtils.separatorsToSystem;
+import static org.awaitility.Awaitility.await;
 
 public final class VideoRecordingUtils {
 
@@ -29,7 +33,7 @@ public final class VideoRecordingUtils {
 		if (!videoFolder.exists()) {
 			videoFolder.mkdirs();
 		}
-		final String outputPath = getFile(fileName + "_tmp").toString();
+		final File tempFile = getFile(fileName + "_tmp");
 
 		final String[] commandsSequence = new String[]{
 				"ffmpeg",
@@ -39,12 +43,13 @@ public final class VideoRecordingUtils {
 				"-i", System.getenv("DISPLAY"),
 				"-an",
 				"-r", "12",
-				outputPath
+				tempFile.toString()
 		};
 
 		CompletableFuture.supplyAsync(() -> runCommand(commandsSequence))
 				.whenCompleteAsync((output, errors) -> {
 					log.info("Start recording output log: " + output + (errors != null ? "; ex: " + errors : ""));
+					tempFile.renameTo(getFile(fileName));
 				});
 	}
 
@@ -54,16 +59,13 @@ public final class VideoRecordingUtils {
 	}
 
 	public static String doVideoProcessing(boolean successfulTest, String fileName) {
-		File tempFile =  getFile(fileName + "_tmp");
-		File destFile =  getFile(fileName );
-
-		log.info("Trying to rename " + tempFile);
+		File destFile =  getFile(fileName);
 		if (!successfulTest) {
-			tempFile.renameTo(destFile);
 			log.info("Video recording: " + destFile);
 			return destFile.toString();
 		} else {
-			tempFile.delete();
+			waitForVideoCompleted(destFile);
+			destFile.delete();
 			log.info("No video on success test");
 		}
 		return "";
@@ -71,15 +73,14 @@ public final class VideoRecordingUtils {
 
 	private static File getFile(final String filename) {
 		File movieFolder = new File(MOVIE_FOLDER);
-		final String name = filename + "_video";
-		return new File(movieFolder + File.separator + name + EXTENSION);
+		return new File(movieFolder + File.separator + filename + EXTENSION);
 	}
 
 	private static String getResolution() {
 		return (int) screenSize.getWidth() + "x" + (int) screenSize.getHeight();
 	}
 
-	private static String runCommand(final String... args) {
+	public static String runCommand(final String... args) {
 		log.info("Trying to execute the following command: " + Arrays.asList(args));
 		try {
 			return new ProcessExecutor()
@@ -88,8 +89,19 @@ public final class VideoRecordingUtils {
 					.execute()
 					.outputUTF8();
 		} catch (IOException | InterruptedException | TimeoutException e) {
-			log.error("Unable to execute command: " + e);
-			return "PROCESS_EXECUTION_ERROR";
+			log.warn("Unable to execute command: " + e);
+			throw new RecordingException(e);
+		}
+	}
+
+	private static void waitForVideoCompleted(File video) {
+		try {
+			await().atMost(5, TimeUnit.SECONDS)
+					.pollDelay(500, TimeUnit.MILLISECONDS)
+					.ignoreExceptions()
+					.until(video::exists);
+		} catch (ConditionTimeoutException ex) {
+			throw new RecordingException(ex.getMessage());
 		}
 	}
 

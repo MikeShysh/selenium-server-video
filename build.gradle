@@ -10,10 +10,10 @@ repositories {
 }
 
 dependencies {
-    //compile 'org.apache.commons:commons-lang3:3.4'
     compile 'log4j:log4j:1.2.17'
     compile 'org.zeroturnaround:zt-exec:1.9'
-    compile 'org.seleniumhq.selenium:selenium-server:3.5.2'
+    compile 'org.seleniumhq.selenium:selenium-server:3.5.3'
+    compile 'org.awaitility:awaitility:2.0.0'
     testCompile 'junit:junit:4.12'
     testCompile 'com.codeborne:selenide:4.5.1'
 }
