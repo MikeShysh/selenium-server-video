@@ -31,7 +31,6 @@ public class VideoServlet extends HttpServlet {
 		try {
 			switch (path) {
 				case "/start":
-					stopFFmpeg();
 					startFFmpeg(fileName);
 					updateResponse(resp, HttpStatus.SC_OK, "recording started");
 					break;

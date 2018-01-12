@@ -1,8 +1,5 @@
 package com.portaone.videonode.exception;
 
-/**
- * Created by sergey on 4/13/16.
- */
 public class RecordingException extends RuntimeException {
 
     public RecordingException() {

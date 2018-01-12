@@ -1,22 +1,14 @@
 package com.portaone.videonode.utils;
 
 import com.portaone.videonode.exception.RecordingException;
-import org.apache.commons.lang3.SystemUtils;
-import org.awaitility.core.ConditionTimeoutException;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
-
-import static org.apache.commons.io.FilenameUtils.separatorsToSystem;
-import static org.awaitility.Awaitility.await;
 
 public final class VideoRecordingUtils {
 
@@ -33,7 +25,7 @@ public final class VideoRecordingUtils {
 		if (!videoFolder.exists()) {
 			videoFolder.mkdirs();
 		}
-		final File tempFile = getFile(fileName + "_tmp");
+		final File videoFileName = getFile(fileName);
 
 		final String[] commandsSequence = new String[]{
 				"ffmpeg",
@@ -43,13 +35,12 @@ public final class VideoRecordingUtils {
 				"-i", System.getenv("DISPLAY"),
 				"-an",
 				"-r", "12",
-				tempFile.toString()
+				videoFileName.toString()
 		};
 
 		CompletableFuture.supplyAsync(() -> runCommand(commandsSequence))
 				.whenCompleteAsync((output, errors) -> {
 					log.info("Start recording output log: " + output + (errors != null ? "; ex: " + errors : ""));
-					tempFile.renameTo(getFile(fileName));
 				});
 	}
 
@@ -64,7 +55,6 @@ public final class VideoRecordingUtils {
 			log.info("Video recording: " + destFile);
 			return destFile.toString();
 		} else {
-			waitForVideoCompleted(destFile);
 			destFile.delete();
 			log.info("No video on success test");
 		}
@@ -91,17 +81,6 @@ public final class VideoRecordingUtils {
 		} catch (IOException | InterruptedException | TimeoutException e) {
 			log.warn("Unable to execute command: " + e);
 			throw new RecordingException(e);
-		}
-	}
-
-	private static void waitForVideoCompleted(File video) {
-		try {
-			await().atMost(5, TimeUnit.SECONDS)
-					.pollDelay(500, TimeUnit.MILLISECONDS)
-					.ignoreExceptions()
-					.until(video::exists);
-		} catch (ConditionTimeoutException ex) {
-			throw new RecordingException(ex.getMessage());
 		}
 	}
 
