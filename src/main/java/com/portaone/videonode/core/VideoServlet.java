@@ -1,8 +1,5 @@
 package com.portaone.videonode.core;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpStatus;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.portaone.videonode.utils.VideoRecordingUtils.doVideoProcessing;
+import static com.portaone.videonode.utils.VideoRecordingUtils.getStackTrace;
 import static com.portaone.videonode.utils.VideoRecordingUtils.startFFmpeg;
 import static com.portaone.videonode.utils.VideoRecordingUtils.stopFFmpeg;
 
@@ -32,17 +30,17 @@ public class VideoServlet extends HttpServlet {
 			switch (path) {
 				case "/start":
 					startFFmpeg(fileName);
-					updateResponse(resp, HttpStatus.SC_OK, "recording started");
+					updateResponse(resp, 200, "recording started");
 					break;
 				case "/stop":
 					stopFFmpeg();
 					String filePath = doVideoProcessing(isSuccess(req), fileName);
-					updateResponse(resp, HttpStatus.SC_OK, "recording stopped " + filePath);
+					updateResponse(resp, 200, "recording stopped " + filePath);
 					break;
 			}
 		} catch (Exception ex) {
-			updateResponse(resp, HttpStatus.SC_INTERNAL_SERVER_ERROR,
-					"Internal server error occurred while trying to start / stop recording: " + ExceptionUtils.getStackTrace(ex));
+			updateResponse(resp, 500,
+					"Internal server error occurred while trying to start / stop recording: " + getStackTrace(ex));
 		}
 	}
 

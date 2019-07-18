@@ -6,6 +6,8 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
@@ -82,6 +84,13 @@ public final class VideoRecordingUtils {
 			log.warn("Unable to execute command: " + e);
 			throw new RecordingException(e);
 		}
+	}
+
+	public static String getStackTrace(final Throwable throwable) {
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw, true);
+		throwable.printStackTrace(pw);
+		return sw.getBuffer().toString();
 	}
 
 }
