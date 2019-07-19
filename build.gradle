@@ -26,7 +26,3 @@ jar {
     }
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.0.1'
-}
