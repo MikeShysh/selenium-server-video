@@ -1,6 +1,6 @@
-package com.portaone.videonode.utils;
+package com.portaone.servlet.utils;
 
-import com.portaone.videonode.exception.RecordingException;
+import com.portaone.servlet.exception.RecordingException;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.awt.*;

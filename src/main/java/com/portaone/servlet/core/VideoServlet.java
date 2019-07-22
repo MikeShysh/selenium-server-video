@@ -1,4 +1,4 @@
-package com.portaone.videonode.core;
+package com.portaone.servlet.core;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.portaone.videonode.utils.VideoRecordingUtils.doVideoProcessing;
-import static com.portaone.videonode.utils.VideoRecordingUtils.getStackTrace;
-import static com.portaone.videonode.utils.VideoRecordingUtils.startFFmpeg;
-import static com.portaone.videonode.utils.VideoRecordingUtils.stopFFmpeg;
+import static com.portaone.servlet.utils.VideoRecordingUtils.doVideoProcessing;
+import static com.portaone.servlet.utils.VideoRecordingUtils.getStackTrace;
+import static com.portaone.servlet.utils.VideoRecordingUtils.startFFmpeg;
+import static com.portaone.servlet.utils.VideoRecordingUtils.stopFFmpeg;
 
 public class VideoServlet extends HttpServlet {
 

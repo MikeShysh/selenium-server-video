@@ -1,4 +1,4 @@
-package com.portaone.videonode.exception;
+package com.portaone.servlet.exception;
 
 public class RecordingException extends RuntimeException {
 
